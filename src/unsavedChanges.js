@@ -139,14 +139,10 @@ angular.module('unsavedChanges', ['resettable'])
         // if any one is dirty function will return true
 
         function allFormsClean() {
-            areAllFormsClean = true;
-            angular.forEach(allForms, function(item, idx) {
-                unsavedWarningsConfig.log('Form : ' + item.$name + ' dirty : ' + item.$dirty);
-                if (item.$dirty) {
-                    areAllFormsClean = false;
-                }
+            return allForms.every(function(form, idx) {
+                unsavedWarningsConfig.log('Form : ' + form.$name + ' dirty : ' + form.$dirty);
+                return form.$pristine;
             });
-            return areAllFormsClean; // no dirty forms were found
         }
 
         // adds form controller to registered forms array
@@ -193,6 +189,7 @@ angular.module('unsavedChanges', ['resettable'])
             unsavedWarningsConfig.log('Setting up');
 
             $window.onbeforeunload = _this.confirmExit;
+
 
             var eventsToWatchFor = unsavedWarningsConfig.routeEvent;
 
