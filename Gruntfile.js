@@ -7,6 +7,9 @@ module.exports = function(grunt) {
         scope: ['dependencies', 'devDependencies']
     });
 
+    grunt.loadNpmTasks('grunt-protractor-runner');
+    grunt.loadNpmTasks('grunt-protractor-webdriver');
+
     grunt.initConfig({
         // end 2 end testing with protractor
         protractor: {
@@ -27,6 +30,17 @@ module.exports = function(grunt) {
                 }
             }
         },
+        protractor_webdriver: {
+            options: {
+                keepAlive : true
+            },
+            e2eStart: {
+                options: {
+                    path: './node_modules/.bin/',
+                    command: 'webdriver-manager start --standalone'
+                },
+            },
+        },
         connect: {
             server: {
                 options: {
@@ -38,7 +52,7 @@ module.exports = function(grunt) {
             // our protractor server
             testserver: {
                 options: {
-                    port: 9999
+                    port: 9998
                 }
             },
             travisServer: {
@@ -121,12 +135,14 @@ module.exports = function(grunt) {
     ]);
 
     grunt.registerTask('autotest:e2e', [
+        'protractor_webdriver:e2eStart',
         'connect:testserver', // - starts the app so the test runner can visit the app
         'shell:selenium', // - starts selenium server in watch mode
         'watch:protractor' // - watches scripts and e2e specs, and starts tests on file change
     ]);
 
     grunt.registerTask('test:e2e', [
+        'protractor_webdriver:e2eStart',
         'connect:testserver', // - run concurrent tests
         'protractor:singlerun' // - single run protractor
     ]);
