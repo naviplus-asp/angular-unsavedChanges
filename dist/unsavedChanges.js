@@ -78,7 +78,7 @@ angular.module('unsavedChanges', ['resettable'])
                     if (console.log && logEnabled && arguments.length) {
                         var newarr = [].slice.call(arguments);
                         if (typeof console.log === 'object') {
-                            log.apply.call(console.log, console, newarr);
+                            this.log.apply.call(console.log, console, newarr);
                         } else {
                             console.log.apply(console, newarr);
                         }
@@ -121,8 +121,9 @@ angular.module('unsavedChanges', ['resettable'])
     ];
 })
 
-.service('unsavedWarningSharedService', ['$rootScope', 'unsavedWarningsConfig', '$injector', '$window',
-    function($rootScope, unsavedWarningsConfig, $injector, $window) {
+.service('unsavedWarningSharedService', ['$rootScope', 'unsavedWarningsConfig', '$injector', '$window', "$timeout", "$location",
+    function($rootScope, unsavedWarningsConfig, $injector, $window, $timeout, $location) {
+
         // Controller scopped variables
         var _this = this;
         var allForms = [];
@@ -138,14 +139,10 @@ angular.module('unsavedChanges', ['resettable'])
         // if any one is dirty function will return true
 
         function allFormsClean() {
-            areAllFormsClean = true;
-            angular.forEach(allForms, function(item, idx) {
-                unsavedWarningsConfig.log('Form : ' + item.$name + ' dirty : ' + item.$dirty);
-                if (item.$dirty) {
-                    areAllFormsClean = false;
-                }
+            return allForms.every(function(form, idx) {
+                unsavedWarningsConfig.log('Form : ' + form.$name + ' dirty : ' + form.$dirty);
+                return form.$pristine;
             });
-            return areAllFormsClean; // no dirty forms were found
         }
 
         // adds form controller to registered forms array
@@ -193,6 +190,7 @@ angular.module('unsavedChanges', ['resettable'])
 
             $window.onbeforeunload = _this.confirmExit;
 
+
             var eventsToWatchFor = unsavedWarningsConfig.routeEvent;
 
             angular.forEach(eventsToWatchFor, function(aEvent) {
@@ -210,7 +208,7 @@ angular.module('unsavedChanges', ['resettable'])
                             } else {
                                 unsavedWarningsConfig.log("user doesn't care about loosing stuff");
                                 tearDown();
-                                $location.path(next.$$route.originalPath)
+                                $location.path(next.$$route.originalPath);
                             }
                         });
                     } else {
