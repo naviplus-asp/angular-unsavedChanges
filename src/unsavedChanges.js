@@ -11,7 +11,7 @@ angular.module('unsavedChanges', ['resettable'])
     // defaults
     var logEnabled = false;
     var useTranslateService = true;
-    var routeEvent = ['$locationChangeStart', '$stateChangeStart'];
+    var routeEvent = ['$routeChangeStart', '$stateChangeStart'];
     var navigateMessage = 'You will lose unsaved changes if you leave this page';
     var reloadMessage = 'You will lose unsaved changes if you reload this page';
 
@@ -78,7 +78,7 @@ angular.module('unsavedChanges', ['resettable'])
                     if (console.log && logEnabled && arguments.length) {
                         var newarr = [].slice.call(arguments);
                         if (typeof console.log === 'object') {
-                            log.apply.call(console.log, console, newarr);
+                            this.log.apply.call(console.log, console, newarr);
                         } else {
                             console.log.apply(console, newarr);
                         }
@@ -121,8 +121,8 @@ angular.module('unsavedChanges', ['resettable'])
     ];
 })
 
-.service('unsavedWarningSharedService', ['$rootScope', 'unsavedWarningsConfig', '$injector', '$window',
-    function($rootScope, unsavedWarningsConfig, $injector, $window) {
+.service('unsavedWarningSharedService', ['$rootScope', 'unsavedWarningsConfig', '$injector', '$window', "$timeout", "$location",
+    function($rootScope, unsavedWarningsConfig, $injector, $window, $timeout, $location) {
 
         // Controller scopped variables
         var _this = this;
@@ -201,13 +201,14 @@ angular.module('unsavedChanges', ['resettable'])
                     if (!allFormsClean()) {
                         unsavedWarningsConfig.log("a form is dirty");
                         // allow any existing scope digest to complete
-                        setTimeout(function () {
-                            if (!confirm(unsavedWarningsConfig.navigateMessage)) {
+                        event.preventDefault(); // user clicks cancel, wants to stay on page
+                        $timeout(function () {
+                            if (!$window.confirm(unsavedWarningsConfig.navigateMessage)) {
                                 unsavedWarningsConfig.log("user wants to cancel leaving");
-                                event.preventDefault(); // user clicks cancel, wants to stay on page
                             } else {
                                 unsavedWarningsConfig.log("user doesn't care about loosing stuff");
-                                $rootScope.$broadcast('resetResettables');
+                                tearDown();
+                                $location.path(next.$$route.originalPath);
                             }
                         });
                     } else {

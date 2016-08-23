@@ -9,6 +9,7 @@ module.exports = function(grunt) {
 
     grunt.loadNpmTasks('grunt-protractor-runner');
     grunt.loadNpmTasks('grunt-protractor-webdriver');
+    grunt.loadNpmTasks('grunt-contrib-jshint');
 
     grunt.initConfig({
         // end 2 end testing with protractor
@@ -97,7 +98,10 @@ module.exports = function(grunt) {
             }
         },
         jshint: {
-            all: ['src/*.js']
+            src: ['src/*.js'],
+            options: {
+                jshintrc: true
+            },
         },
         strip: {
             main: {
