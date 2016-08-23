@@ -7,6 +7,7 @@ var alertDialog;
 
 var cleanUp = function() {
     browser.navigate().refresh();
+    browser.ignoreSynchronization = true;
     alertDialog = browser.switchTo().alert();
     alertDialog.accept();
 };
@@ -23,9 +24,11 @@ describe('When single form is dirty', function() {
 
     describe('when user clicks a link', function() {
 
-        beforeEach(function() {
+        beforeEach(function(done) {
+            browser.ignoreSynchronization = true;
             element(by.id('page2')).click();
-            alertDialog = browser.switchTo().alert();
+            alertDialog = browser.switchTo().alert()
+            alertDialog.then(done);
         });
 
         it('should alert user', function() {
@@ -79,9 +82,11 @@ describe('When single form is dirty', function() {
 
     describe('when user refreshes page', function() {
 
-        beforeEach(function() {
+        beforeEach(function(done) {
+            browser.ignoreSynchronization = true;
             browser.navigate().refresh();
-            alertDialog = browser.switchTo().alert();
+            alertDialog = browser.switchTo().alert()
+            alertDialog.then(done);
         });
 
         it('should alert user', function() {
@@ -131,9 +136,13 @@ describe('When single form is dirty', function() {
 
     describe('when user clicks back button', function() {
 
-        beforeEach(function() {
-            browser.navigate().back();
-            alertDialog = browser.switchTo().alert();
+        beforeEach(function (done) {
+            browser.ignoreSynchronization = true;
+            browser.navigate().back().catch(function () {
+              browser.switchTo().alert().then(function (dialog) {
+                  alertDialog = dialog;
+              })
+            }).then(done)
         });
 
         it('should alert user', function() {
@@ -153,7 +162,7 @@ describe('When single form is dirty', function() {
 
         describe('when user rejects alert', function() {
             beforeEach(function() {
-                alertDialog.dismiss();
+                alertDialog.dismiss()
             });
 
             it('should stay on page', function() {
@@ -187,8 +196,9 @@ describe('When single form is dirty', function() {
 
         afterEach(function() {
             browser.navigate().refresh();
+            browser.ignoreSynchronization = true;
             alertDialog = browser.switchTo().alert();
-            alertDialog.accept();
+            alertDialog.then(alertDialog.accept)
         });
 
         describe('user clicks link, dismisses, then clicks link again', function() {
@@ -215,6 +225,7 @@ describe('When single form is dirty', function() {
         describe('user clicks link, dismisses, then refreshes page', function() {
 
             beforeEach(function() {
+              browser.ignoreSynchronization = true;
                 element(by.id('page2')).click();
                 alertDialog = browser.switchTo().alert();
                 alertDialog.dismiss();
@@ -236,6 +247,7 @@ describe('When single form is dirty', function() {
         describe('user refreshes, dismisses, then clicks link', function() {
 
             beforeEach(function() {
+              browser.ignoreSynchronization = true;
                 browser.navigate().refresh();
                 alertDialog = browser.switchTo().alert();
                 alertDialog.dismiss();
@@ -257,6 +269,7 @@ describe('When single form is dirty', function() {
         describe('user refreshes, dismisses, then refreshes', function() {
 
             beforeEach(function() {
+              browser.ignoreSynchronization = true;
                 browser.navigate().refresh();
                 alertDialog = browser.switchTo().alert();
                 alertDialog.dismiss();
@@ -343,7 +356,7 @@ describe('When single form is dirty', function() {
                 expect(browser.getCurrentUrl()).toContain('/page2');
             });
         });
-    
+
     });
 
 });
@@ -361,6 +374,7 @@ describe('When multiple forms are dirty', function() {
     });
 
     it('should only show one message (versus three)', function() {
+        browser.ignoreSynchronization = true;
         element(by.id('page1')).click();
         alertDialog = browser.switchTo().alert();
         alertDialog.accept();
