@@ -17,7 +17,7 @@ describe('When single form is dirty', function() {
     beforeEach(function() {
         // start on page 2, then navigate to page 1
         // so that our history contains a page to go back to
-        browser.get('demo/#/page2');
+        browser.get('demo/ng-router/#/page2');
         element(by.id('page1')).click();
         element(by.id('userName')).sendKeys('haha');
     });
@@ -366,7 +366,7 @@ describe('When multiple forms are dirty', function() {
     beforeEach(function() {
         // start on page 2, then navigate to page 1
         // so that our history contains a page to go back to
-        browser.get('demo/#/page1');
+        browser.get('demo/ng-router/#/page1');
         element(by.id('page2')).click();
         element(by.model('user1.name')).sendKeys('haha');
         element(by.model('user2.name')).sendKeys('haha');
@@ -388,7 +388,7 @@ describe('When form not dirty', function() {
     beforeEach(function() {
         // start on page 2, then navigate to page 1
         // so that our history contains a page to go back to
-        browser.get('demo/#/page2');
+        browser.get('demo/ng-router/#/page2');
         element(by.id('page1')).click();
     });
 
