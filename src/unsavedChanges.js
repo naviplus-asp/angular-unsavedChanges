@@ -195,6 +195,18 @@ angular.module('unsavedChanges', ['resettable'])
 
             angular.forEach(eventsToWatchFor, function(aEvent) {
                 //calling this function later will unbind this, acting as $off()
+                var transition;
+
+                if(aEvent === "$routeChangeStart") {
+                    transition = function(next) {
+                        $location.path(next.$$route.originalPath);
+                    };
+                } else {
+                    transition = function(next) {
+                        $location.path(next.url);
+                    };
+                }
+
                 var removeFn = $rootScope.$on(aEvent, function(event, next, current) {
                     unsavedWarningsConfig.log("user is moving with " + aEvent);
                     // @todo this could be written a lot cleaner!
@@ -208,7 +220,7 @@ angular.module('unsavedChanges', ['resettable'])
                             } else {
                                 unsavedWarningsConfig.log("user doesn't care about loosing stuff");
                                 tearDown();
-                                $location.path(next.$$route.originalPath);
+                                transition(next);
                             }
                         });
                     } else {
@@ -275,8 +287,8 @@ angular.module('unsavedChanges', ['resettable'])
                 // do things like reset validation, present messages, etc.
                 formElement.bind('reset', function(event) {
                     event.preventDefault();
-                    
-                    // trigger resettables within this form or element 
+
+                    // trigger resettables within this form or element
                     var resettables = angular.element(formElement[0].querySelector('[resettable]'));
                     if(resettables.length) {
                         // use safer method than $apply
@@ -312,7 +324,7 @@ angular.module('unsavedChanges', ['resettable'])
  * --------------------------------------------
  *
  * @note we don't create a seperate scope so the model value
- * is still available onChange within the controller scope. 
+ * is still available onChange within the controller scope.
  * This fixes https://github.com/facultymatt/angular-unsavedChanges/issues/19
  *
  */
