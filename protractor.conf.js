@@ -31,7 +31,7 @@ exports.config = {
   //
   // Spec patterns are relative to the location of this config.
   specs: [
-    'test/e2e/*.js'
+    'test/e2e/**/*.js'
   ],
 
   // ----- Capabilities to be passed to the webdriver instance ----
@@ -51,7 +51,7 @@ exports.config = {
   baseUrl: 'http://localhost:9998',
 
   // Selector for the element housing the angular app - this defaults to
-  // body, but is necessary if ng-app is on a descendant of <body>  
+  // body, but is necessary if ng-app is on a descendant of <body>
   rootElement: 'body',
 
   // ----- Options to be passed to minijasminenode -----

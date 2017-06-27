@@ -30,6 +30,7 @@
     "angular-mocks": "~1.5.x",
     "angular-scenario": "~1.5.x",
     "jquery": "~2.0.3",
-    "angular-translate": "^2.0.1"
+    "angular-translate": "^2.0.1",
+    "angular-ui-router": "^0.3.1"
   }
 }
